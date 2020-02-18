@@ -1,3 +1,5 @@
+var database
+
 function setup() {
   createCanvas(400, 400)
 
@@ -16,7 +18,8 @@ function setup() {
   firebase.analytics()
   console.log(firebase)
 
-  var database = firebase.database()
+  database = firebase.database()
+  var ref = database.ref('dreams')
 }
 
 function draw() {
