@@ -4,19 +4,47 @@ var myWords
 
 function preload() {
   // Preload test.txt to test string-manipulation and later cloudcreation
-  text = loadStrings('test.txt')
+  text = loadStrings('assets/test.txt')
 }
 
-function formatData(data, dictionary) {
-  // myWords = []
+function formatData(data) {
+  myWords = []
+  var wordDict = {}
   // for (let i = 0; i < dictionary.keys.length; i++) {
   //   let thisWord = dictionary.keys[i]
   //   let thisCount = dictionary.getCount(thisWord)
   //   myWords.push({ word: thisWord, size: thisCount })
   // }
-  myWords = dictionary.split(data)
-  console.log(myWords)
+  // myWords = split(data, /\W+/)
+  // myWords = String.prototype.split(data, /\W+/)
+  for (let i = 0; i < data.length; i++) {
+    // var textArray = String.prototype.split(data[i], /\W+/)
+    var textArray = data[i].split(/\W+/)
+    // console.log(data[i])
+    // console.log(textArray)
+    wordcount(textArray, wordDict)
+  }
+  console.log(wordDict)
+
+  // console.log(myWords)
   // constructCloud()
+}
+
+function wordcount(textArray, dict) {
+  for (let i = 0; i < textArray.length; i++) {
+    increment(textArray[i], dict)
+  }
+}
+
+// Increment the count for a word
+function increment(word, dict) {
+  // Is this a new word?
+  if (!dict[word]) {
+    dict[word] = 1
+    // Otherwise just increment its count
+  } else {
+    dict[word]++
+  }
 }
 
 function setup() {
@@ -43,7 +71,7 @@ function setup() {
 
   // -------------- Texhandling
   wordCounter = new TextHandler()
-  formatData(text, wordCounter)
+  formatData(text)
   // -------------- Texhandling
 }
 
