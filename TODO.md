@@ -1,4 +1,7 @@
 # TODO
-- [X] TODO 1
-- [ ] TODO 2
-asdlfkjasdflkjasdlkfjlaksjdff
+- [ ] speech rec knap - start og stop 
+- [ ] wordcloud
+- [ ] gemme pCreate til string, så den kan bruges til wordcloud
+- [ ] finde noget animation til knappen
+
+
