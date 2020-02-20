@@ -5,3 +5,9 @@
 - [ ] finde noget animation til knappen
 
 
+
+
+
+
+KNAP IDEER
+https://codepen.io/leenalavanya/pen/aXMXvz 
