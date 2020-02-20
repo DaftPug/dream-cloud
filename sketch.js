@@ -1,6 +1,8 @@
 var database
 var text
-var myWords
+var margin = { top: 10, right: 10, bottom: 10, left: 10 },
+  width = 450 - margin.left - margin.right,
+  height = 450 - margin.top - margin.bottom
 
 function preload() {
   // Preload test.txt to test string-manipulation and later cloudcreation
@@ -8,7 +10,6 @@ function preload() {
 }
 
 function formatData(data, wordDict) {
-  myWords = []
   for (let i = 0; i < data.length; i++) {
     // var textArray = String.prototype.split(data[i], /\W+/)
     var textArray = data[i].replace(/[^ÆØÅæøåA-Za-zó]+/g, '/')
@@ -34,6 +35,7 @@ function wordcount(textArray, dict) {
 
 // Increment the count for a word
 function increment(word, dict) {
+  // word toLowerCase - so all words are equal in the count
   word = word.toLowerCase()
   // Is this a new word?
   if (!dict[word]) {
@@ -73,80 +75,106 @@ function setup() {
   console.log(wordDict)
 
   // -------------- Texthandling
+  // constructCloud()
 }
 
 function draw() {
   background(210)
 }
 
-class TextHandler {
-  constructor() {
-    this.dict = {}
-    this.keys = []
-  }
+var skillsToDraw = [
+  { text: 'javascript', size: 80 },
+  { text: 'D3.js', size: 30 },
+  { text: 'coffeescript', size: 50 },
+  { text: 'shaving sheep', size: 50 },
+  { text: 'AngularJS', size: 60 },
+  { text: 'Ruby', size: 60 },
+  { text: 'ECMAScript', size: 30 },
+  { text: 'Actionscript', size: 20 },
+  { text: 'Linux', size: 40 },
+  { text: 'C++', size: 40 },
+  { text: 'C#', size: 50 },
+  { text: 'JAVA', size: 76 }
+]
 
-  // Splitting up the text
-  split(text) {
-    // Split into array of tokens
-    return text.split(/\W+/)
-  }
+var svg = d3
+  .select('#cloud')
+  .append('svg')
+  .attr('width', width + margin.left + margin.right)
+  .attr('height', height + margin.top + margin.bottom)
+  .append('g')
+  .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
-  // A function to validate a toke
-  validate(token) {
-    return /\w{2,}/.test(token)
-  }
+function constructCloud() {
+  layout = d3.layout
+    .cloud()
+    .size([width, height])
+    .words(skillsToDraw)
+    .rotate(function() {
+      return ~~(Math.random() * 2) * 90
+    })
+    .font('Impact')
+    .fontSize(function(d) {
+      return d.size
+    })
+    .on('end', drawC)
 
-  // Process new text
-  process(tokens) {
-    //console.log(tokens);
-    // For every token
-    for (var i = 0; i < tokens.length; i++) {
-      // Lowercase everything to ignore case
-      if (!tokens[i]) continue
-      var token = tokens[i].toLowerCase()
-      if (this.validate(token)) {
-        // Increase the count for the token
-        this.increment(token)
-      }
-    }
-  }
+  layout.start()
+}
 
-  // An array of keys
-  getKeys() {
-    return this.keys
-  }
+function drawC(words) {
+  svg
+    .append('g')
+    .attr('transform', 'translate(' + layout.size()[0] / 2 + ',' + layout.size()[1] / 2 + ')')
+    .selectAll('text')
+    .data(words)
+    .enter()
+    .append('text')
+    .style('font-size', function(d) {
+      return d.size
+    })
+    .style('fill', '#69b3a2')
+    .attr('text-anchor', 'middle')
+    .style('font-family', 'Impact')
+    .attr('transform', function(d) {
+      return 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')'
+    })
+    .text(function(d) {
+      return d.text
+    })
+}
 
-  // Get the count for a word
-  getCount(word) {
-    return this.dict[word]
-  }
-
-  // Increment the count for a word
-  increment(word) {
-    // Is this a new word?
-    if (!this.dict[word]) {
-      this.dict[word] = 1
-      this.keys.push(word)
-      // Otherwise just increment its count
-    } else {
-      this.dict[word]++
-    }
-  }
-
-  // Sort array of keys by counts
-  sortByCount() {
-    // For this function to work for sorting, I have
-    // to store a reference to this so the context is not lost!
-    var concordance = this
-
-    // A fancy way to sort each element
-    // Compare the counts
-    function sorter(a, b) {
-      var diff = concordance.getCount(b) - concordance.getCount(a)
-      return diff
-    }
-
-    // Sort using the function above!
-    this.keys.sort(sorter)
-  }
+// apply D3.js drawing API
+function drawSkillCloud(words) {
+  d3.select('#cloud')
+    .append('svg')
+    .attr('width', width)
+    .attr('height', height)
+    .append('g')
+    .attr('transform', 'translate(' + ~~(width / 2) + ',' + ~~(height / 2) + ')')
+    .selectAll('text')
+    .data(words)
+    .enter()
+    .append('text')
+    .style('font-size', function(d) {
+      return d.size + 'px'
+    })
+    .style('-webkit-touch-callout', 'none')
+    .style('-webkit-user-select', 'none')
+    .style('-khtml-user-select', 'none')
+    .style('-moz-user-select', 'none')
+    .style('-ms-user-select', 'none')
+    .style('user-select', 'none')
+    .style('cursor', 'default')
+    .style('font-family', 'Impact')
+    .style('fill', function(d, i) {
+      return fill(i)
+    })
+    .attr('text-anchor', 'middle')
+    .attr('transform', function(d) {
+      return 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')'
+    })
+    .text(function(d) {
+      return d.text
+    })
 }
