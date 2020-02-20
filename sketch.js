@@ -7,24 +7,16 @@ function preload() {
   text = loadStrings('assets/test.txt')
 }
 
-function formatData(data) {
+function formatData(data, wordDict) {
   myWords = []
-  var wordDict = {}
-  // for (let i = 0; i < dictionary.keys.length; i++) {
-  //   let thisWord = dictionary.keys[i]
-  //   let thisCount = dictionary.getCount(thisWord)
-  //   myWords.push({ word: thisWord, size: thisCount })
-  // }
-  // myWords = split(data, /\W+/)
-  // myWords = String.prototype.split(data, /\W+/)
   for (let i = 0; i < data.length; i++) {
     // var textArray = String.prototype.split(data[i], /\W+/)
-    var textArray = data[i].split(/\W+/)
-    // console.log(data[i])
+    var textArray = data[i].replace(/[^ÆØÅæøåA-Za-zó]+/g, '/')
     // console.log(textArray)
+    textArray = textArray.split(/[^ÆØÅæøåA-Za-zó]+/g)
+
     wordcount(textArray, wordDict)
   }
-  console.log(wordDict)
 
   // console.log(myWords)
   // constructCloud()
@@ -32,12 +24,17 @@ function formatData(data) {
 
 function wordcount(textArray, dict) {
   for (let i = 0; i < textArray.length; i++) {
-    increment(textArray[i], dict)
+    // Because of the replace and split in formatData, some empty ""
+    // will go through - this catches and eliminates them from the wordcount
+    if (!textArray[i] == '') {
+      increment(textArray[i], dict)
+    }
   }
 }
 
 // Increment the count for a word
 function increment(word, dict) {
+  word = word.toLowerCase()
   // Is this a new word?
   if (!dict[word]) {
     dict[word] = 1
@@ -69,10 +66,13 @@ function setup() {
   // var ref = database.ref('dreams')
   // -------------- Firebase
 
-  // -------------- Texhandling
-  wordCounter = new TextHandler()
-  formatData(text)
-  // -------------- Texhandling
+  // -------------- Texthandling
+  var wordDict = {}
+  formatData(text, wordDict)
+
+  console.log(wordDict)
+
+  // -------------- Texthandling
 }
 
 function draw() {
