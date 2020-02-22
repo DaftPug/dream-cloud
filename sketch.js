@@ -1,8 +1,8 @@
 var database
 var text
 var margin = { top: 10, right: 10, bottom: 10, left: 10 },
-  width = 450 - margin.left - margin.right,
-  height = 450 - margin.top - margin.bottom
+  width = 512 - margin.left - margin.right,
+  height = 512 - margin.top - margin.bottom
 
 function preload() {
   // Preload test.txt to test string-manipulation and later cloudcreation
@@ -47,7 +47,7 @@ function increment(word, dict) {
 }
 
 function setup() {
-  createCanvas(400, 400)
+  // createCanvas(600, 600)
 
   // -------------- Firebase
   var firebaseConfig = {
@@ -75,7 +75,16 @@ function setup() {
   console.log(wordDict)
 
   // -------------- Texthandling
-  // constructCloud()
+  constructCloud()
+  // d3.wordcloud()
+  // .size([800, 400])
+  // .selector('#cloud')
+  // // .words([
+  // //   { text: 'word', size: 5 },
+  // //   { text: 'cloud', size: 15 }
+  // // ])
+  // .words(skillsToDraw)
+  // .start()
 }
 
 function draw() {
@@ -110,15 +119,18 @@ function constructCloud() {
     .cloud()
     .size([width, height])
     .words(skillsToDraw)
+    // .rotate(function() {
+    //   return ~~(Math.random() * 2) * 90
+    // })
     .rotate(function() {
-      return ~~(Math.random() * 2) * 90
+      return ~~(Math.random() * 2) * 0
     })
     .font('Impact')
     .fontSize(function(d) {
       return d.size
     })
-    .on('end', drawC)
-
+    .on('end', drawSkillCloud)
+  // debugger
   layout.start()
 }
 
@@ -146,6 +158,7 @@ function drawC(words) {
 
 // apply D3.js drawing API
 function drawSkillCloud(words) {
+  // debugger
   d3.select('#cloud')
     .append('svg')
     .attr('width', width)
