@@ -1,6 +1,7 @@
-
 // var database
 var text
+var myRec
+
 // var margin = { top: 10, right: 10, bottom: 10, left: 10 },
 //   width = 512 - margin.left - margin.right,
 //   height = 512 - margin.top - margin.bottom
@@ -8,7 +9,11 @@ var text
 function preload() {
   // Preload test.txt to test string-manipulation and later cloudcreation
   text = loadStrings('assets/test.txt')
+  myRec = new p5.SpeechRec('en-US', parseResult) // new P5.SpeechRec object
+  myRec.continuous = true // do continuous recognition
+  myRec.interimResults = true // allow partial recognition (faster, less accurate)
 }
+
 function formatData(data, wordDict) {
   for (let i = 0; i < data.length; i++) {
     // var textArray = String.prototype.split(data[i], /\W+/)
@@ -20,6 +25,7 @@ function formatData(data, wordDict) {
   // console.log(myWords)
   // constructCloud()
 }
+
 function wordcount(textArray, dict) {
   for (let i = 0; i < textArray.length; i++) {
     // Because of the replace and split in formatData, some empty ""
@@ -28,18 +34,17 @@ function wordcount(textArray, dict) {
       increment(textArray[i], dict)
     }
   }
-
 }
 
-// Increment the count for a word
 function increment(word, dict) {
-  // word toLowerCase - so all words are equal in the count
+  // Increment the count for a word
   word = word.toLowerCase()
-  // Is this a new word?
+  // word toLowerCase - so all words are equal in the count
   if (!dict[word]) {
+    // Is this a new word?
     dict[word] = 1
-    // Otherwise just increment its count
   } else {
+    // Otherwise just increment its count
     dict[word]++
   }
 }
@@ -53,44 +58,40 @@ function createCloudArray(dict) {
   return cloudArray
 }
 
-function setup() {
-  // -------------- Firebase
-  // var firebaseConfig = {
-  //   apiKey: 'AIzaSyAET8NX9-hMGX0WeYaZNNI147BMHOL5RII',
-  //   authDomain: 'dream-cloud-d4d1d.firebaseapp.com',
-  //   databaseURL: 'https://dream-cloud-d4d1d.firebaseio.com',
-  //   projectId: 'dream-cloud-d4d1d',
-  //   storageBucket: 'dream-cloud-d4d1d.appspot.com',
-  //   messagingSenderId: '470432303775',
-  //   appId: '1:470432303775:web:ca3e84b4d9754e2e9df0aa',
-  //   measurementId: 'G-5ET0GNFW4M'
-  // }
-  // Initialize Firebase
-  // firebase.initializeApp(firebaseConfig)
-  // firebase.analytics()
-  // console.log(firebase)
-  // database = firebase.database()
-  // var ref = database.ref('dreams')
-  // -------------- Firebase
+function parseResult() {
+  // recognition system will often append words into phrases.
+  // so hack here is to only use the last word:
+  if (myRec.resultValue == true) {
+    var detectedSpeech, compareSpeech
+    detectedSpeech = myRec.resultString()
+    if (detectedSpeech != compareSpeech) {
+      console.log(detectedSpeech)
+    }
+    compareSpeech = detectedSpeech
+  }
+}
 
+function starter() {
+  myRec.start()
+}
+
+function stopped() {
+  // TODO Find a way to actualy stop recording
+  myRec.stop()
+}
+
+function setup() {
   // -------------- Texthandling
   var wordDict = {}
   formatData(text, wordDict)
   var cloudArray = createCloudArray(wordDict)
   console.log(wordDict)
-
   // -------------- Texthandling
-  // constructCloud()
   d3.wordcloud()
     .size([800, 800])
     .selector('#cloud')
-    // .words([
-    //   { text: 'word', size: 5 },
-    //   { text: 'cloud', size: 15 }
-    // ])
     .words(cloudArray)
     .start()
-======= end
 }
 
 function draw() {
