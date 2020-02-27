@@ -1,6 +1,13 @@
 // var database
 var text
 var myRec
+var recording = false
+var ended = true
+var cloudDiv
+var cloudDict = {}
+var wordList = []
+var cloudReadyArray = []
+var WORDLIMIT = 20
 
 // var margin = { top: 10, right: 10, bottom: 10, left: 10 },
 //   width = 512 - margin.left - margin.right,
@@ -8,10 +15,25 @@ var myRec
 
 function preload() {
   // Preload test.txt to test string-manipulation and later cloudcreation
+  cloudDiv = createDiv('')
+  cloudDiv.id('cloud')
   text = loadStrings('assets/test.txt')
-  myRec = new p5.SpeechRec('en-US', parseResult) // new P5.SpeechRec object
-  myRec.continuous = true // do continuous recognition
+  let lang = navigator.language
+  myRec = new p5.SpeechRec('da-DK', parseResult) // new P5.SpeechRec object
+  // myRec.continuous = true // do continuous recognition
   myRec.interimResults = true // allow partial recognition (faster, less accurate)
+  myRec.onStart = console.log('HAHAHA')
+}
+
+function reloadDiv() {
+  cloudDiv.remove()
+  cloudDiv = createDiv('')
+  cloudDiv.id('cloud')
+}
+
+function endRecording() {
+  ended = true
+  console.log('Recording ended muahaha')
 }
 
 function formatData(data, wordDict) {
@@ -63,39 +85,74 @@ function parseResult() {
   // so hack here is to only use the last word:
   if (myRec.resultValue == true) {
     var detectedSpeech, compareSpeech
-    detectedSpeech = myRec.resultString()
+    detectedSpeech = myRec.resultString
     if (detectedSpeech != compareSpeech) {
-      console.log(detectedSpeech)
+      var tempList = split(detectedSpeech, ' ')
+
+      for (let i = 0; i < tempList.length; i++) {
+        // console.log(tempList[i])
+        wordList.push(tempList[i])
+      }
+      if (wordList.length > WORDLIMIT) {
+        wordcount(wordList, cloudDict)
+        // console.log(cloudDict)
+        cloudReadyArray = createCloudArray(cloudDict)
+        // console.log(cloudReadyArray)
+        createCloud(cloudReadyArray)
+        wordList = []
+        console.log(cloudDict)
+      }
+      // console.log(detectedSpeech)
     }
     compareSpeech = detectedSpeech
   }
 }
 
 function starter() {
-  myRec.start()
+  recording = true
+
+  // myRec.start()
 }
 
 function stopped() {
+  recording = false
   // TODO Find a way to actualy stop recording
-  myRec.stop()
+  // myRec.cancel()
+  // myRec.continuous = false // do continuous recognition
+  // myRec.interimResults = false // allow partial recognition (faster, less accurate)
 }
 
 function setup() {
   // -------------- Texthandling
-  var wordDict = {}
-  formatData(text, wordDict)
-  var cloudArray = createCloudArray(wordDict)
-  console.log(wordDict)
-  // -------------- Texthandling
+  // var wordDict = {}
+  // formatData(text, wordDict)
+  // var cloudArray = createCloudArray(wordDict)
+  // console.log(wordDict)
+  // // -------------- Texthandling
+  // d3.wordcloud()
+  //   .size([800, 800])
+  //   .selector('#cloud')
+  //   .words(cloudArray)
+  //   .start()
+}
+
+function draw() {
+  if (recording == true) {
+    if (ended == true) {
+      myRec.start()
+      ended = false
+    }
+  }
+  // myRec.onEnd = endRecording()
+}
+
+function createCloud(cloudArray) {
+  reloadDiv()
   d3.wordcloud()
     .size([800, 800])
     .selector('#cloud')
     .words(cloudArray)
     .start()
-}
-
-function draw() {
-  // background(210)
 }
 // var skillsToDraw = [
 //   { text: 'javascript', size: 80 },
