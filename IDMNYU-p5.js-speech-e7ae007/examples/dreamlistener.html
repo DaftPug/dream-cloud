@@ -17,11 +17,11 @@ function setup() {
 
     speechRec.start(continuous, interim);
         
-   // function gotSpeech() {
-    //    if(speechRec.resultValue) {
-     //       createP(speechRec.resultString); // creating a paragraph lenght text - can we make a list of words, and somehow create a searchable entity
-      //      }
-       // }
+    function gotSpeech() {
+        if(speechRec.resultValue) {
+            createP(speechRec.resultString); // creating a paragraph lenght text - can we make a list of words, and somehow create a searchable entity
+            }
+        }
 }
 
 </script>
