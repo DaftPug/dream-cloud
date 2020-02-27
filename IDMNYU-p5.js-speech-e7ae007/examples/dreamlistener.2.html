@@ -8,10 +8,11 @@
 let droemmeTekst = "";
 
 function setup() {
-    //createCanvas(800,400);
+   
     noCanvas;
     let lang = navigator.language;
-    let speechRec = new p5.SpeechRec(lang, gotSpeech)
+    // lang
+    let speechRec = new p5.SpeechRec('da-DK', gotSpeech)
     
     let continuous = true;
     let interim = false;
