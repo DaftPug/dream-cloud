@@ -8,6 +8,9 @@ var cloudDict = {}
 var wordList = []
 var cloudReadyArray = []
 var WORDLIMIT = 20
+var width = 800
+var height = 800
+var fill
 
 // var margin = { top: 10, right: 10, bottom: 10, left: 10 },
 //   width = 512 - margin.left - margin.right,
@@ -17,17 +20,22 @@ function preload() {
   // Preload test.txt to test string-manipulation and later cloudcreation
   cloudDiv = createDiv('')
   cloudDiv.id('cloud')
-  text = loadStrings('assets/test.txt')
-  // myRec = new p5.SpeechRec('da-DK', parseResult) // new P5.SpeechRec object
-  // // myRec.continuous = true // do continuous recognition
-  // myRec.interimResults = true // allow partial recognition (faster, less accurate)
+  cloudDiv.parent('temp')
+  // text = loadStrings('assets/test.txt')
+  myRec = new p5.SpeechRec('da-DK', parseResult) // new P5.SpeechRec object
+  myRec.continuous = true // do continuous recognition
+  myRec.interimResults = true // allow partial recognition (faster, less accurate)
   // myRec.onStart = console.log('HAHAHA')
 }
 
 function reloadDiv() {
+  // Deletes and creates an html div with id 'cloud'
+  // so the wordcloud is updated at the same spot
+  // instead of beneath each other
   cloudDiv.remove()
   cloudDiv = createDiv('')
   cloudDiv.id('cloud')
+  cloudDiv.parent('temp')
 }
 
 function endRecording() {
@@ -36,6 +44,7 @@ function endRecording() {
 }
 
 function formatData(data, wordDict) {
+  // Testing function for the H.C.Andersen text, not used anymore
   for (let i = 0; i < data.length; i++) {
     // var textArray = String.prototype.split(data[i], /\W+/)
     var textArray = data[i].replace(/[^ÆØÅæøåA-Za-zó]+/g, '/')
@@ -97,24 +106,25 @@ function parseResult() {
         // console.log(cloudDict)
         cloudReadyArray = createCloudArray(cloudDict)
         // console.log(cloudReadyArray)
-        createCloud(cloudReadyArray)
+        // createCloud(cloudReadyArray)
+        constructCloud(cloudArray)
         wordList = []
-        console.log(cloudDict)
+        console.table(cloudDict)
       }
       // console.log(detectedSpeech)
     }
     compareSpeech = detectedSpeech
+  } else {
+    console.log('not regeristering any speach now')
   }
 }
 
 function starter() {
-  recording = true
   console.log('Start')
-  // myRec.start()
+  myRec.start()
 }
 
 function stopped() {
-  recording = false
   console.log('Stop')
   // TODO Find a way to actualy stop recording
   // myRec.cancel()
@@ -125,24 +135,24 @@ function stopped() {
 function setup() {}
 
 function draw() {
-  if (recording == true) {
-    if (ended == true) {
-      myRec = new p5.SpeechRec('da-DK', parseResult) // new P5.SpeechRec object
-      // myRec.continuous = true // do continuous recognition
-      myRec.interimResults = true // allow partial recognition (faster, less accurate)
-      // myRec.onEnd = endRecording()
-      // console.log((myRec.onEnd = endRecording()))
-      myRec.start()
-      ended = false
-    }
-    if (myRec.onEnd == true) {
-      console.log('IT ENDED')
-    }
-    if (myRec.resultValue == true) {
-      console.log('value == false')
-      ended = true
-    }
-  }
+  // if (recording == true) {
+  //   if (ended == true) {
+  //     myRec = new p5.SpeechRec('da-DK', parseResult) // new P5.SpeechRec object
+  //     // myRec.continuous = true // do continuous recognition
+  //     myRec.interimResults = true // allow partial recognition (faster, less accurate)
+  //     // myRec.onEnd = endRecording()
+  //     // console.log((myRec.onEnd = endRecording()))
+  //     myRec.start()
+  //     ended = false
+  //   }
+  //   if (myRec.onEnd == true) {
+  //     console.log('IT ENDED')
+  //   }
+  //   if (myRec.resultValue == true) {
+  //     console.log('value == false')
+  //     ended = true
+  //   }
+  // }
   // myRec.onEnd = endRecording()
 }
 
@@ -177,25 +187,26 @@ function createCloud(cloudArray) {
 //   .append('g')
 //   .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
-// function constructCloud() {
-//   layout = d3.layout
-//     .cloud()
-//     .size([width, height])
-//     .words(skillsToDraw)
-//     // .rotate(function() {
-//     //   return ~~(Math.random() * 2) * 90
-//     // })
-//     .rotate(function() {
-//       return ~~(Math.random() * 2) * 0
-//     })
-//     .font('Impact')
-//     .fontSize(function(d) {
-//       return d.size
-//     })
-//     .on('end', drawSkillCloud)
-//   // debugger
-//   layout.start()
-// }
+function constructCloud(cloudArray) {
+  reloadDiv()
+  fill = d3.scale.category20()
+  layout = d3.layout
+    .cloud()
+    .size([400, 400])
+    .words(cloudArray)
+    // .rotate(function() {
+    //   return ~~(Math.random() * 2) * 90
+    // })
+    // .padding(5)
+    .spiral('rectangular')
+    .font('Impact')
+    .fontSize(function(d) {
+      return d.size
+    })
+    .on('end', drawSkillCloud)
+  // debugger
+  layout.start()
+}
 
 // function drawC(words) {
 //   svg
@@ -219,38 +230,46 @@ function createCloud(cloudArray) {
 //     })
 // }
 
-// // apply D3.js drawing API
-// function drawSkillCloud(words) {
-//   // debugger
-//   d3.select('#cloud')
-//     .append('svg')
-//     .attr('width', width)
-//     .attr('height', height)
-//     .append('g')
-//     .attr('transform', 'translate(' + ~~(width / 2) + ',' + ~~(height / 2) + ')')
-//     .selectAll('text')
-//     .data(words)
-//     .enter()
-//     .append('text')
-//     .style('font-size', function(d) {
-//       return d.size + 'px'
-//     })
-//     .style('-webkit-touch-callout', 'none')
-//     .style('-webkit-user-select', 'none')
-//     .style('-khtml-user-select', 'none')
-//     .style('-moz-user-select', 'none')
-//     .style('-ms-user-select', 'none')
-//     .style('user-select', 'none')
-//     .style('cursor', 'default')
-//     .style('font-family', 'Impact')
-//     .style('fill', function(d, i) {
-//       return fill(i)
-//     })
-//     .attr('text-anchor', 'middle')
-//     .attr('transform', function(d) {
-//       return 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')'
-//     })
-//     .text(function(d) {
-//       return d.text
-//     })
-// }
+// apply D3.js drawing API
+function drawSkillCloud(words) {
+  // debugger
+  d3.select('#cloud')
+    .append('svg')
+    .attr('width', layout.size()[0])
+    .attr('height', layout.size()[1])
+    .append('g')
+    // .attr('transform', 'translate(' + layout.size()[0] + ',' + layout.size()[1] + ')')
+    .attr(
+      'transform',
+      'translate(' + ~~(layout.size()[0] / 2) + ',' + ~~(layout.size()[1] / 2) + ')'
+    )
+    .selectAll('text')
+    .data(words)
+    .enter()
+    .append('text')
+    .style('font-size', function(d) {
+      return d.size + 'px'
+    })
+    .style('-webkit-touch-callout', 'none')
+    .style('-webkit-user-select', 'none')
+    .style('-khtml-user-select', 'none')
+    .style('-moz-user-select', 'none')
+    .style('-ms-user-select', 'none')
+    .style('user-select', 'none')
+    .style('cursor', 'default')
+    .style('font-family', 'Impact')
+    .style('fill', function(d, i) {
+      return fill(i)
+    })
+    .attr('text-anchor', 'middle')
+    .attr('transform', function(d) {
+      return 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')'
+    })
+    .text(function(d) {
+      return d.text
+    })
+  var svg = document.getElementsByTagName('svg')[0]
+  var bbox = svg.getBBox()
+  var viewBox = [bbox.x, bbox.y, bbox.width, bbox.height].join(' ')
+  svg.setAttribute('viewBox', viewBox)
+}
