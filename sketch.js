@@ -18,11 +18,10 @@ function preload() {
   cloudDiv = createDiv('')
   cloudDiv.id('cloud')
   text = loadStrings('assets/test.txt')
-  let lang = navigator.language
-  myRec = new p5.SpeechRec('da-DK', parseResult) // new P5.SpeechRec object
-  // myRec.continuous = true // do continuous recognition
-  myRec.interimResults = true // allow partial recognition (faster, less accurate)
-  myRec.onStart = console.log('HAHAHA')
+  // myRec = new p5.SpeechRec('da-DK', parseResult) // new P5.SpeechRec object
+  // // myRec.continuous = true // do continuous recognition
+  // myRec.interimResults = true // allow partial recognition (faster, less accurate)
+  // myRec.onStart = console.log('HAHAHA')
 }
 
 function reloadDiv() {
@@ -33,7 +32,7 @@ function reloadDiv() {
 
 function endRecording() {
   ended = true
-  console.log('Recording ended muahaha')
+  // console.log('Recording ended muahaha')
 }
 
 function formatData(data, wordDict) {
@@ -110,37 +109,38 @@ function parseResult() {
 
 function starter() {
   recording = true
-
+  console.log('Start')
   // myRec.start()
 }
 
 function stopped() {
   recording = false
+  console.log('Stop')
   // TODO Find a way to actualy stop recording
   // myRec.cancel()
   // myRec.continuous = false // do continuous recognition
   // myRec.interimResults = false // allow partial recognition (faster, less accurate)
 }
 
-function setup() {
-  // -------------- Texthandling
-  // var wordDict = {}
-  // formatData(text, wordDict)
-  // var cloudArray = createCloudArray(wordDict)
-  // console.log(wordDict)
-  // // -------------- Texthandling
-  // d3.wordcloud()
-  //   .size([800, 800])
-  //   .selector('#cloud')
-  //   .words(cloudArray)
-  //   .start()
-}
+function setup() {}
 
 function draw() {
   if (recording == true) {
     if (ended == true) {
+      myRec = new p5.SpeechRec('da-DK', parseResult) // new P5.SpeechRec object
+      // myRec.continuous = true // do continuous recognition
+      myRec.interimResults = true // allow partial recognition (faster, less accurate)
+      // myRec.onEnd = endRecording()
+      // console.log((myRec.onEnd = endRecording()))
       myRec.start()
       ended = false
+    }
+    if (myRec.onEnd == true) {
+      console.log('IT ENDED')
+    }
+    if (myRec.resultValue == true) {
+      console.log('value == false')
+      ended = true
     }
   }
   // myRec.onEnd = endRecording()
