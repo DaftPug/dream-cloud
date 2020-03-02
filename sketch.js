@@ -1,8 +1,12 @@
-// var database
 var text
 var myRec
 var started = false
 var cloudDiv
+var titleDiv
+var containerDiv
+var ul
+var a_start
+var a_stop
 var cloudDict = {}
 var cloudReadyArray = []
 var wordList = []
@@ -18,15 +22,10 @@ var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
 var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent
 var trueRec = new SpeechRecognition()
 
-// var margin = { top: 10, right: 10, bottom: 10, left: 10 },
-//   width = 512 - margin.left - margin.right,
-//   height = 512 - margin.top - margin.bottom
-
 function preload() {
   // Preload test.txt to test string-manipulation and later cloudcreation
-  cloudDiv = createDiv('')
-  cloudDiv.id('cloud')
-  cloudDiv.parent('temp')
+  createBody()
+
   // text = loadStrings('assets/test.txt')
   // myRec = new p5.SpeechRec('da-DK', parseResult) // new P5.SpeechRec object
   // myRec.continuous = true // do continuous recognition
@@ -35,30 +34,35 @@ function preload() {
   // slowRec.continuous = true
 }
 
-function slowParse() {
-  // recognition system will often append words into phrases.
-  // so hack here is to only use the last word:
-  if (slowRec.resultValue == true) {
-    console.count('slowRec.resultValue == true')
-    var detectedSpeech
-    detectedSpeech = slowRec.resultString
-    var tempList = split(detectedSpeech, ' ')
+function createBody() {
+  ul = document.createElement('ul')
+  ul.setAttribute('id', 'menu')
 
-    var slowList = []
-    for (let i = 0; i < tempList.length; i++) {
-      slowList.push(tempList[i])
-    }
-    wordcount(slowList, slowDict)
-    cloudDict = slowDict
-    slowReadyArray = createCloudArray(slowDict)
-    constructCloud(slowReadyArray)
+  a_start = document.createElement('a')
+  a_start.setAttribute('class', 'menu-button icon-minus')
+  a_start.setAttribute('href', '#menu')
+  a_start.setAttribute('onclick', 'starter()')
+  a_start.setAttribute('title', 'Hide navigation')
+  a_stop = document.createElement('a')
+  a_stop.setAttribute('class', 'menu-button icon-plus')
+  a_stop.setAttribute('href', '#0')
+  a_stop.setAttribute('onclick', 'stopped()')
+  a_stop.setAttribute('title', 'Show navigation')
 
-    var size = Object.keys(slowDict).length
-    console.log(size)
-    console.log(slowDict)
-  } else {
-    console.log('not regeristering any speach now')
-  }
+  ul.appendChild(a_start)
+  ul.appendChild(a_stop)
+
+  titleDiv = createDiv('DreamTracker')
+  titleDiv.class('title')
+
+  containerDiv = createDiv('')
+  containerDiv.class('container')
+  containerDiv.id('temp')
+  containerDiv.child(ul)
+
+  cloudDiv = createDiv('')
+  cloudDiv.id('cloud')
+  cloudDiv.parent('temp')
 }
 
 function reloadDiv() {
@@ -70,6 +74,16 @@ function reloadDiv() {
   cloudDiv.id('cloud')
   cloudDiv.parent('temp')
 }
+
+// function createDivs() {
+//   titleDiv = createDiv('DreamTracker')
+//   titleDiv.class('title')
+
+//   containerDiv = createDiv('')
+//   containerDiv.class('container')
+//   containerDiv.id('temp')
+//   containerDiv.child(ul)
+// }
 
 function formatData(data, wordDict) {
   // Testing function for the H.C.Andersen text, not used anymore
@@ -178,6 +192,7 @@ function cloudify(transcript, log) {
 function starter() {
   // myRec.start()
   // slowRec.start()
+  document.getElementById('menu').style.display = 'none'
   let finalTranscript = ''
   let count = 0
   trueRec.interimResults = true
