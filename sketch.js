@@ -1,10 +1,16 @@
 var text
+var startbutton
+var stopbutton
+var button
+var running = false
 var myRec
 var started = false
 var cloudDiv
 var titleDiv
 var containerDiv
 var ul
+var input
+var analyzer
 var a_start
 var a_stop
 var cloudDict = {}
@@ -59,6 +65,7 @@ function createBody() {
   containerDiv.class('container')
   containerDiv.id('temp')
   containerDiv.child(ul)
+  document.getElementById('menu').style.display = 'none'
 
   cloudDiv = createDiv('')
   cloudDiv.id('cloud')
@@ -74,16 +81,6 @@ function reloadDiv() {
   cloudDiv.id('cloud')
   cloudDiv.parent('temp')
 }
-
-// function createDivs() {
-//   titleDiv = createDiv('DreamTracker')
-//   titleDiv.class('title')
-
-//   containerDiv = createDiv('')
-//   containerDiv.class('container')
-//   containerDiv.id('temp')
-//   containerDiv.child(ul)
-// }
 
 function formatData(data, wordDict) {
   // Testing function for the H.C.Andersen text, not used anymore
@@ -172,6 +169,7 @@ function parseResult() {
     // }
   } else {
     console.log('not regeristering any speach now')
+    DreamTracker
   }
 }
 
@@ -192,11 +190,11 @@ function cloudify(transcript, log) {
 function starter() {
   // myRec.start()
   // slowRec.start()
-  document.getElementById('menu').style.display = 'none'
+  // document.getElementById('menu').style.display = 'none'
   let finalTranscript = ''
   let count = 0
   trueRec.interimResults = true
-  trueRec.maxAlternatives = 10
+  trueRec.maxAlternatives = 0
   trueRec.continuous = true
   trueRec.lang = 'da-DK'
   trueRec.onresult = event => {
@@ -216,19 +214,89 @@ function starter() {
       }
     }
   }
+  // soundEffect()
   trueRec.start()
   console.log('Start')
 }
 
+function soundEffect() {
+  let volume = input.getLevel()
+
+  // If the volume > 0.1,  a rect is drawn at a random location.
+  // The louder the volume, the larger the rectangle.
+  let threshold = 0.00001
+
+  if (volume > threshold) {
+    fill(255, 255)
+    ellipse(random(10, width), random(height), volume * 30, volume * 30)
+  }
+
+  // Graph the overall potential volume, w/ a line at the threshold
+  let y = map(volume, 0, 1, height, 0)
+  let ythreshold = map(threshold, 0, 1, height, 0)
+
+  // noStroke()
+  // fill(000)
+  // rect(0, 0, 20, height)
+  // // Then draw a rectangle on the graph, sized according to volume
+  // fill(0)
+  // rect(0, y, 20, y)
+  // //stroke(0);
+  // line(0, ythreshold, 19, ythreshold)
+  // noFill()
+}
+
 function stopped() {
   trueRec.stop()
+  input.stop()
   console.log('Stop')
 }
 
-function setup() {}
+function setup() {
+  canvas = createCanvas(windowWidth, windowHeight)
+  canvas.position(0, 0)
+  canvas.style('z-index', '-1')
+  background(000)
 
-function draw() {}
+  // Create an Audio input
+  input = new p5.AudioIn()
+  input.start()
+  button = new Clickable()
+  button.locate(20, 20)
+  button.text = 'Start dreaming'
+  button.onPress = function() {
+    changeButton()
+    starter()
+  }
+}
 
+function draw() {
+  button.draw()
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight)
+}
+
+function changeButton() {
+  if (running == false) {
+    button.text = 'Stop dreaming'
+    button.onPress = function() {
+      changeButton()
+      stopped()
+    }
+    running = true
+  } else {
+    button.text = 'Start dreaming'
+    button.onPress = function() {
+      changeButton()
+      starter()
+    }
+    running = false
+  }
+}
+
+function createLanguageButton(x, y, language) {}
 function createCloud(cloudArray) {
   reloadDiv()
   d3.wordcloud()
