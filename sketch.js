@@ -19,8 +19,8 @@ var wordList = []
 var slowDict = {}
 var slowReadyArray = []
 var WORDLIMIT = 5
-var width = 800
-var height = 800
+// var width = 800
+// var height = 800
 var fill
 var layout
 var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
@@ -82,19 +82,6 @@ function reloadDiv() {
   cloudDiv.parent('temp')
 }
 
-function formatData(data, wordDict) {
-  // Testing function for the H.C.Andersen text, not used anymore
-  for (let i = 0; i < data.length; i++) {
-    // var textArray = String.prototype.split(data[i], /\W+/)
-    var textArray = data[i].replace(/[^ÆØÅæøåA-Za-zó]+/g, '/')
-    // console.log(textArray)
-    textArray = textArray.split(/[^ÆØÅæøåA-Za-zó]+/g)
-    wordcount(textArray, wordDict)
-  }
-  // console.log(myWords)
-  // constructCloud()
-}
-
 function wordcount(textArray, dict) {
   for (let i = 0; i < textArray.length; i++) {
     // Because of the replace and split in formatData, some empty ""
@@ -133,44 +120,6 @@ function createCloudArray(dict) {
   }
   // console.log(cloudArray)
   return cloudArray
-}
-
-Object.size = function(obj) {
-  var size = 0,
-    key
-  for (key in obj) {
-    if (obj.hasOwnProperty(key)) size++
-  }
-  return size
-}
-
-function parseResult() {
-  // recognition system will often append words into phrases.
-  // so hack here is to only use the last word:
-  if (myRec.resultValue == true) {
-    // console.count('myRec.resultValue == true')
-    var detectedSpeech = myRec.resultString
-    for (let i = 0; i < tempList.length; i++) {
-      wordList.push(tempList[i])
-    }
-    // if (wordList.length > WORDLIMIT) {
-    // console.count('WORDLIMIT reached')
-    wordcount(wordList, cloudDict)
-    cloudReadyArray = createCloudArray(cloudDict)
-    constructCloud(cloudReadyArray)
-
-    wordList = []
-    // var size = Object.size(cloudDict)
-    // var size = Object.keys(cloudDict).length
-    // console.log(size)
-    // console.log(cloudDict)
-    // }
-    // console.log(detectedSpeech)
-    // }
-  } else {
-    console.log('not regeristering any speach now')
-    DreamTracker
-  }
 }
 
 function cloudify(transcript, log) {
@@ -228,50 +177,73 @@ function soundEffect() {
 
   if (volume > threshold) {
     fill(255, 255)
-    ellipse(random(10, width), random(height), volume * 30, volume * 30)
+    ellipse(random(10, windowWidth), random(windowHeight), volume * 30, volume * 30)
   }
 
   // Graph the overall potential volume, w/ a line at the threshold
   let y = map(volume, 0, 1, height, 0)
   let ythreshold = map(threshold, 0, 1, height, 0)
 
-  // noStroke()
-  // fill(000)
-  // rect(0, 0, 20, height)
-  // // Then draw a rectangle on the graph, sized according to volume
-  // fill(0)
-  // rect(0, y, 20, y)
-  // //stroke(0);
-  // line(0, ythreshold, 19, ythreshold)
-  // noFill()
+  noStroke()
+  fill(000)
+  rect(0, 0, 20, height)
+  // Then draw a rectangle on the graph, sized according to volume
+  fill(0)
+  rect(0, y, 20, y)
+  //stroke(0);
+  line(0, ythreshold, 19, ythreshold)
+  noFill()
 }
 
 function stopped() {
   trueRec.stop()
   input.stop()
+  // canvas.redraw()
+
   console.log('Stop')
 }
 
 function setup() {
+  // Create canvas
   canvas = createCanvas(windowWidth, windowHeight)
+  canvas.parent('temp')
   canvas.position(0, 0)
-  canvas.style('z-index', '-1')
-  background(000)
-
+  canvas.style('z-index', '2')
+  // background(000)
   // Create an Audio input
   input = new p5.AudioIn()
   input.start()
-  button = new Clickable()
-  button.locate(20, 20)
-  button.text = 'Start dreaming'
-  button.onPress = function() {
-    changeButton()
+
+  // create start button
+  startbutton = new Clickable()
+  startbutton.color = '#A0C29B'
+  startbutton.locate(20, 20)
+  startbutton.text = 'Start dreaming'
+  startbutton.onPress = function() {
     starter()
   }
+
+  // create stop button
+  stopbutton = new Clickable()
+  stopbutton.color = '#FCA392'
+  stopbutton.locate(20, 90)
+  stopbutton.text = 'Stop dreaming'
+  stopbutton.onPress = function() {
+    stopped()
+  }
+
+  // create debug button
 }
 
 function draw() {
-  button.draw()
+  // background(000)
+  startbutton.draw()
+  stopbutton.draw()
+  // console.log(startbutton.color)
+  if (running == true) {
+    soundEffect()
+  }
+  // console.count(running == true)
 }
 
 function windowResized() {
@@ -280,31 +252,25 @@ function windowResized() {
 
 function changeButton() {
   if (running == false) {
+    console.log('running == false')
+    running = true
     button.text = 'Stop dreaming'
     button.onPress = function() {
       changeButton()
       stopped()
     }
-    running = true
   } else {
+    console.log('running == true')
+    running = false
     button.text = 'Start dreaming'
     button.onPress = function() {
       changeButton()
       starter()
     }
-    running = false
   }
 }
 
 function createLanguageButton(x, y, language) {}
-function createCloud(cloudArray) {
-  reloadDiv()
-  d3.wordcloud()
-    .size([800, 800])
-    .selector('#cloud')
-    .words(cloudArray)
-    .start()
-}
 
 function constructCloud(cloudArray) {
   reloadDiv()
@@ -316,33 +282,23 @@ function constructCloud(cloudArray) {
     .cloud()
     .size([400, 400])
     .words(cloudArray)
-    // .rotate(function() {
-    //   return ~~(Math.random() * 2) * 90
-    // })
-    // .padding(5)
     .spiral('rectangular')
     .font('Impact')
     .fontSize(function(d) {
       return d.size * 20
     })
     .on('end', drawSkillCloud)
-  // debugger
-  // console.groupCollapsed('layout', layout)
-  if (started == false) {
-    started = true
-  }
+
   layout.start()
 }
 
 // apply D3.js drawing API
 function drawSkillCloud(words) {
-  // debugger
   d3.select('#cloud')
     .append('svg')
     .attr('width', layout.size()[0])
     .attr('height', layout.size()[1])
     .append('g')
-    // .attr('transform', 'translate(' + layout.size()[0] + ',' + layout.size()[1] + ')')
     .attr(
       'transform',
       'translate(' + ~~(layout.size()[0] / 2) + ',' + ~~(layout.size()[1] / 2) + ')'
