@@ -1,6 +1,8 @@
 var text
+var globalLang = 'da-DK'
 var startbutton
 var stopbutton
+var dk_button
 var button
 var running = false
 var myRec
@@ -23,6 +25,7 @@ var WORDLIMIT = 5
 // var height = 800
 var fill
 var layout
+var ellipses = []
 var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
 var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
 var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent
@@ -142,10 +145,13 @@ function starter() {
   // document.getElementById('menu').style.display = 'none'
   let finalTranscript = ''
   let count = 0
+  running = true
+  input = new p5.AudioIn()
+  input.start()
   trueRec.interimResults = true
-  trueRec.maxAlternatives = 0
+  trueRec.maxAlternatives = 1
   trueRec.continuous = true
-  trueRec.lang = 'da-DK'
+  trueRec.lang = globalLang
   trueRec.onresult = event => {
     let interimTranscript = finalTranscript
     for (let i = event.resultIndex, len = event.results.length; i < len; i++) {
@@ -177,73 +183,145 @@ function soundEffect() {
 
   if (volume > threshold) {
     fill(255, 255)
-    ellipse(random(10, windowWidth), random(windowHeight), volume * 30, volume * 30)
+    // ellipses.push(ellipse(random(10, windowWidth), random(windowHeight), volume * 30, volume * 30))
+    ellipse(random(windowWidth), random(windowHeight), volume * 50, volume * 50)
   }
-
-  // Graph the overall potential volume, w/ a line at the threshold
-  let y = map(volume, 0, 1, height, 0)
-  let ythreshold = map(threshold, 0, 1, height, 0)
-
-  noStroke()
-  fill(000)
-  rect(0, 0, 20, height)
-  // Then draw a rectangle on the graph, sized according to volume
-  fill(0)
-  rect(0, y, 20, y)
-  //stroke(0);
-  line(0, ythreshold, 19, ythreshold)
-  noFill()
 }
 
 function stopped() {
+  running = false
   trueRec.stop()
   input.stop()
-  // canvas.redraw()
-
+  ellipses = []
   console.log('Stop')
 }
 
 function setup() {
   // Create canvas
   canvas = createCanvas(windowWidth, windowHeight)
-  canvas.parent('temp')
+  // canvas.parent('temp')
   canvas.position(0, 0)
-  canvas.style('z-index', '2')
-  // background(000)
+  canvas.style('z-index', '-1')
+  background(204, 153, 255)
   // Create an Audio input
-  input = new p5.AudioIn()
-  input.start()
 
   // create start button
   startbutton = new Clickable()
-  startbutton.color = '#A0C29B'
+  startbutton.img = loadImage('/assets/start_4.svg')
   startbutton.locate(20, 20)
-  startbutton.text = 'Start dreaming'
+  startbutton.width = 50
+  startbutton.height = 50
   startbutton.onPress = function() {
     starter()
   }
 
   // create stop button
   stopbutton = new Clickable()
-  stopbutton.color = '#FCA392'
-  stopbutton.locate(20, 90)
-  stopbutton.text = 'Stop dreaming'
+  stopbutton.img = loadImage('/assets/stop_3.svg')
+  stopbutton.locate(20, 20)
+  stopbutton.width = 50
+  stopbutton.height = 50
   stopbutton.onPress = function() {
     stopped()
   }
 
-  // create debug button
+  // create danish language button
+  dk_button = new Clickable()
+  dk_button.img = loadImage('/assets/dk_true.svg')
+  dk_button.locate(20, 90)
+  dk_button.onPress = function() {
+    if (running == true) {
+      stopped()
+    }
+    de_button.img = loadImage('/assets/de.svg')
+    gb_button.img = loadImage('/assets/gb.svg')
+    dk_button.img = loadImage('/assets/dk_true.svg')
+    es_button.img = loadImage('/assets/sp.svg')
+    console.log('Dansk')
+    globalLang = 'da-DK'
+    // starter()
+  }
+
+  // create german language button
+  de_button = new Clickable()
+  de_button.img = loadImage('/assets/de.svg')
+  de_button.locate(20, 160)
+  de_button.onPress = function() {
+    if (running == true) {
+      stopped()
+    }
+    de_button.img = loadImage('/assets/de_true.svg')
+    gb_button.img = loadImage('/assets/gb.svg')
+    dk_button.img = loadImage('/assets/dk.svg')
+    es_button.img = loadImage('/assets/sp.svg')
+    console.log('Tysk')
+    globalLang = 'de-DE'
+    // starter()
+  }
+
+  // create english language button
+  gb_button = new Clickable()
+  gb_button.img = loadImage('/assets/gb.svg')
+  gb_button.locate(20, 230)
+  gb_button.onPress = function() {
+    if (running == true) {
+      stopped()
+    }
+    de_button.img = loadImage('/assets/de.svg')
+    gb_button.img = loadImage('/assets/gb_true.svg')
+    dk_button.img = loadImage('/assets/dk.svg')
+    es_button.img = loadImage('/assets/sp.svg')
+    console.log('Brexit')
+    globalLang = 'en-GB'
+    // starter()
+  }
+
+  // create spanish language button
+  es_button = new Clickable()
+  es_button.img = loadImage('/assets/sp.svg')
+  es_button.locate(20, 300)
+  es_button.onPress = function() {
+    if (running == true) {
+      stopped()
+    }
+    de_button.img = loadImage('/assets/de.svg')
+    gb_button.img = loadImage('/assets/gb.svg')
+    dk_button.img = loadImage('/assets/dk.svg')
+    es_button.img = loadImage('/assets/sp_true.svg')
+    console.log('Spansk')
+    globalLang = 'es-ES'
+    // starter()
+  }
 }
 
 function draw() {
+  background(204, 153, 255)
+
   // background(000)
-  startbutton.draw()
-  stopbutton.draw()
+  dk_button.draw()
+  de_button.draw()
+  gb_button.draw()
+  es_button.draw()
   // console.log(startbutton.color)
   if (running == true) {
-    soundEffect()
+    stopbutton.draw()
+    // soundEffect()
+    // if (ellipses != []) {
+    //   console.log(ellipses)
+    //   for (let i = 0; i < ellipses.length; i++) {
+    //     ellipses[i]
+    //   }
+    // }
+  } else {
+    startbutton.draw()
   }
   // console.count(running == true)
+}
+
+function loadImage(imgFile) {
+  let newImg = new Image()
+  newImg.src = imgFile
+  return newImg
 }
 
 function windowResized() {
