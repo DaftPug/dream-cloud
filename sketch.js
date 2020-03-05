@@ -1,5 +1,6 @@
 var text
 var globalLang = 'da-DK'
+var bg
 var startbutton
 var stopbutton
 var dk_button
@@ -34,7 +35,7 @@ var trueRec = new SpeechRecognition()
 function preload() {
   // Preload test.txt to test string-manipulation and later cloudcreation
   createBody()
-
+  bg = loadImage('assets/stars.jpg')
   // text = loadStrings('assets/test.txt')
   // myRec = new p5.SpeechRec('da-DK', parseResult) // new P5.SpeechRec object
   // myRec.continuous = true // do continuous recognition
@@ -44,6 +45,9 @@ function preload() {
 }
 
 function createBody() {
+  // body = document.getElementById('krop')
+  // body.setAttribute('background', '/assets/stars.jpg')
+
   ul = document.createElement('ul')
   ul.setAttribute('id', 'menu')
 
@@ -218,7 +222,8 @@ function setup() {
   // canvas.parent('temp')
   canvas.position(0, 0)
   canvas.style('z-index', '-1')
-  background(204, 153, 255)
+  // background(204, 153, 255)
+  background(bg)
   // Create an Audio input
 
   // create start button
@@ -244,8 +249,8 @@ function setup() {
   // create danish language button
   dk_button = new Clickable()
   dk_button.img = loadImage('/assets/dk_true.svg')
-  let dk_width = (dk_button.height / 28) * 37
-  dk_button.width = dk_width
+  // let dk_width = (dk_button.height / 28) * 37
+  // dk_button.width = dk_width
   dk_button.locate(20, 90)
   dk_button.onPress = function() {
     if (running == true) {
@@ -264,8 +269,8 @@ function setup() {
   // create spanish language button
   es_button = new Clickable()
   es_button.img = loadImage('/assets/sp.svg')
-  let es_width = (es_button.height / 2) * 3
-  es_button.width = es_width
+  // let es_width = (es_button.height / 2) * 3
+  // es_button.width = es_width
   es_button.locate(20, 160)
   es_button.onPress = function() {
     if (running == true) {
@@ -283,8 +288,8 @@ function setup() {
   // create german language button
   de_button = new Clickable()
   de_button.img = loadImage('/assets/de.svg')
-  let de_width = (de_button.height / 3) * 5
-  de_button.width = de_width
+  // let de_width = (de_button.height / 3) * 5
+  // de_button.width = de_width
   de_button.locate(20, 230)
   de_button.onPress = function() {
     if (running == true) {
@@ -304,8 +309,8 @@ function setup() {
   // create english language button
   gb_button = new Clickable()
   gb_button.img = loadImage('/assets/gb.svg')
-  let gb_width = gb_button.height * 2
-  gb_button.width = gb_width
+  // let gb_width = gb_button.height * 2
+  // gb_button.width = gb_width
   gb_button.locate(20, 300)
   gb_button.onPress = function() {
     if (running == true) {
@@ -326,8 +331,8 @@ function setup() {
 }
 
 function draw() {
-  background(204, 153, 255)
-
+  // background(204, 153, 255)
+  background(bg)
   // background(000)
   dk_button.draw()
   es_button.draw()
