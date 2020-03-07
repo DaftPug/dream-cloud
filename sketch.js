@@ -246,9 +246,19 @@ function setup() {
     stopped()
   }
 
+  // Load Images
+  let dk_flag = loadImage('/assets/dk.svg')
+  let de_flag = loadImage('/assets/de.svg')
+  let es_flag = loadImage('/assets/sp.svg')
+  let gb_flag = loadImage('/assets/gb.svg')
+  let dk_flag_true = loadImage('/assets/dk_true.svg')
+  let de_flag_true = loadImage('/assets/de_true.svg')
+  let es_flag_true = loadImage('/assets/sp_true.svg')
+  let gb_flag_true = loadImage('/assets/gb_true.svg')
+
   // create danish language button
   dk_button = new Clickable()
-  dk_button.img = loadImage('/assets/dk_true.svg')
+  dk_button.img = dk_flag
   // let dk_width = (dk_button.height / 28) * 37
   // dk_button.width = dk_width
   dk_button.locate(20, 90)
@@ -256,10 +266,10 @@ function setup() {
     if (running == true) {
       stopped()
     }
-    de_button.img = loadImage('/assets/de.svg')
-    gb_button.img = loadImage('/assets/gb.svg')
-    dk_button.img = loadImage('/assets/dk_true.svg')
-    es_button.img = loadImage('/assets/sp.svg')
+    de_button.img = de_flag
+    gb_button.img = gb_flag
+    dk_button.img = dk_flag_true
+    es_button.img = es_flag
     brexitDiv(0)
     console.log('Dansk')
     globalLang = 'da-DK'
@@ -268,7 +278,7 @@ function setup() {
 
   // create spanish language button
   es_button = new Clickable()
-  es_button.img = loadImage('/assets/sp.svg')
+  es_button.img = es_flag
   // let es_width = (es_button.height / 2) * 3
   // es_button.width = es_width
   es_button.locate(20, 160)
@@ -276,18 +286,19 @@ function setup() {
     if (running == true) {
       stopped()
     }
-    de_button.img = loadImage('/assets/de.svg')
-    gb_button.img = loadImage('/assets/gb.svg')
-    dk_button.img = loadImage('/assets/dk.svg')
-    es_button.img = loadImage('/assets/sp_true.svg')
+    de_button.img = de_flag
+    gb_button.img = gb_flag
+    dk_button.img = dk_flag
+    es_button.img = es_flag_true
     brexitDiv(0)
 
     console.log('Spansk')
     globalLang = 'es-ES'
   }
+
   // create german language button
   de_button = new Clickable()
-  de_button.img = loadImage('/assets/de.svg')
+  de_button.img = de_flag
   // let de_width = (de_button.height / 3) * 5
   // de_button.width = de_width
   de_button.locate(20, 230)
@@ -295,10 +306,10 @@ function setup() {
     if (running == true) {
       stopped()
     }
-    de_button.img = loadImage('/assets/de_true.svg')
-    gb_button.img = loadImage('/assets/gb.svg')
-    dk_button.img = loadImage('/assets/dk.svg')
-    es_button.img = loadImage('/assets/sp.svg')
+    de_button.img = de_flag_true
+    gb_button.img = gb_flag
+    dk_button.img = dk_flag
+    es_button.img = es_flag
     brexitDiv(0)
 
     console.log('Tysk')
@@ -308,7 +319,7 @@ function setup() {
 
   // create english language button
   gb_button = new Clickable()
-  gb_button.img = loadImage('/assets/gb.svg')
+  gb_button.img = gb_flag
   // let gb_width = gb_button.height * 2
   // gb_button.width = gb_width
   gb_button.locate(20, 300)
@@ -316,10 +327,10 @@ function setup() {
     if (running == true) {
       stopped()
     }
-    de_button.img = loadImage('/assets/de.svg')
-    gb_button.img = loadImage('/assets/gb_true.svg')
-    dk_button.img = loadImage('/assets/dk.svg')
-    es_button.img = loadImage('/assets/sp.svg')
+    de_button.img = de_flag
+    gb_button.img = gb_flag_true
+    dk_button.img = dk_flag
+    es_button.img = es_flag
     brexitDiv(1)
 
     console.log('Brexit')
